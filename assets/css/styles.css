@@ -1,0 +1,63 @@
+body{
+  background: #f1ecec;
+}
+@font-face {
+  font-family: titleFont;
+  src: url(../fonts/font.ttf);
+}
+.title-font{
+  font-family: titleFont;
+  color: #fff!important;
+}
+.bg-nav{
+
+  background-image: url('../imgs/main_bg.jpg'); 
+}
+.bg-home-background{
+
+  background-image: url('../imgs/slide1.jpg'); 
+  background-size: cover;
+  height: 120vh;
+}
+.bg-home-background form{
+  background: #f3f3f370;
+}
+.scroll-to-top {
+  position: fixed;
+  right: 15px;
+  bottom: 3px;
+  display: none;
+  width: 50px;
+  height: 50px;
+  text-align: center;
+  color: white;
+  background: rgba(52, 58, 64, 0.5);
+  line-height: 45px; 
+}
+  .scroll-to-top:focus, .scroll-to-top:hover {
+    color: white; 
+}
+  .scroll-to-top:hover {
+    background: #343a40; 
+}
+  .scroll-to-top i {
+    font-weight: 800; 
+}
+i{
+    color: blue;
+}
+.orange_color{
+    background: orange;
+}
+.blue_color{
+    color: blue;
+}
+.red_color{
+    color: red;
+}
+.white-text{
+    color: #fff;
+}
+.bg-green-color{
+    background: #99cc00;
+}
