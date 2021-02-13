@@ -283,6 +283,107 @@ class Home extends CI_Controller {
 		$this->load->view('footer');
 	}
 
+	public function Profile(){
+		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name']))
+		{
+			$profile_id = $_SESSION['user_id'];
+			$get_profile_info = $this->Commonmodel->get_profile($profile_id);
+			if(!empty($get_profile_info)){
+				$data['profile'] = $get_profile_info;
+			}else{
+				$data['profile'] = array();
+			}
+			$this->load->view('header');
+			$this->load->view('profile',$data);
+			$this->load->view('footer');
+		}else{
+			$this->session->set_flashdata('login_error_msg','Please Login.');
+			redirect('Home/LoginUser');exit();
+		}
+	}
+
+	public function ProfileUpdate(){
+		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])){
+
+			$first_name 		= $this->input->post('first_name');
+			$last_name 			= $this->input->post('last_name');
+			$designation 		= $this->input->post('designation');
+			$DOB 				= $this->input->post('date_of_birth');
+			$email 				= $this->input->post('email');
+			$mobile 			= $this->input->post('mobile');
+
+			$post_array_check = array('first_name'=>'First Name',
+									  'last_name'=>'Last Name',
+									  'designation'=>'Designation',
+									  'date_of_birth'=>'Date of Birth',
+									  'email'=>'Email',
+									  'mobile'=>'Mobile');
+
+			foreach ($post_array_check as $key => $value) {
+				
+				if (!array_key_exists($key,$_POST)){
+					$this->session->set_flashdata('update_error_msg','Data '.$value.' Not Received.');
+					redirect('Home/Profile');exit();
+				}
+				if (empty($_POST[$key])|| trim($_POST[$key])==''){
+					$this->session->set_flashdata('update_error_msg','Please Provide '.$value.'.');
+					redirect('Home/');exit();
+				}
+				
+			}
+			if( strlen( $first_name) >50)
+			{
+				$this->session->set_flashdata('update_error_msg','Please Provide First Name With 50 Characters');
+				redirect('Home/Profile');exit();
+			}
+
+			if( strlen( $last_name) >50){
+
+				$this->session->set_flashdata('update_error_msg','Please Provide Last Name With 50 Characters');
+				redirect('Home/Profile');exit();
+			}
+			if( strlen( $designation) >50){
+
+				$this->session->set_flashdata('update_error_msg','Please Provide Designation With 50 Characters');
+				redirect('Home/Profile');exit();
+			}
+			if( strlen( $email) >100)
+			{
+
+				$this->session->set_flashdata('update_error_msg','Please Provide Email With 100 Characters');
+				redirect('Home/Profile');exit();
+			}
+			if( strlen( $mobile) < 10 || strlen( $mobile) >10)
+			{
+
+				$this->session->set_flashdata('update_error_msg','Please Provide Valid Mobile Number With 10 Digits');
+				redirect('Home/Profile');exit();
+			}
+			/*validation Ends*/
+
+		  	$db_data['first_name'] 			= $first_name;
+			$db_data['last_name'] 			= $last_name;
+			$db_data['designation'] 		= $designation;
+			$db_data['dob'] 				= date('Y-m-d',strtotime($DOB));
+			$db_data['email'] 				= $email;
+			$db_data['mobile'] 				= $mobile;
+			
+			$update_id = $_SESSION['user_id'];
+			$insert_result = $this->Commonmodel->update_profile($update_id,$db_data);
+			if($insert_result)
+			{
+				$this->session->set_flashdata('update_error_msg','Update Successful.');
+				redirect('Home/Profile');exit();
+			}else{
+				$this->session->set_flashdata('update_error_msg','Failed To Update. Try Again.');
+				redirect('Home/Profile');exit();
+			}
+		}else{
+			$this->session->set_flashdata('login_error_msg','Please Login.');
+			redirect('Home/LoginUser');exit();
+		}
+	}
+
 	public function logout(){
 		$this->session->unset_userdata('user_id');
         $this->session->unset_userdata('user_name');

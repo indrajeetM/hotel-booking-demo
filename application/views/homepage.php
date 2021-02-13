@@ -8,7 +8,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 
 <div class="container-fluid " style="padding-right: 0px;padding-left: 0px">
     <div class="bg-home-background">
-    	<a class=" title-font" href="<?php echo base_url(); ?>Home/LoginUser" style="font-size: 1.25rem; float: right;">Login</a>
+    	
     	<div class="row justify-content-center py-5">
     		
 	    	<form class="col-md-6 col-lg-6 col-sm-12 py-3" action="<?php echo base_url(); ?>Home/Register" method="POST" enctype="multipart/form-data" onsubmit="return ValidateForm()" autocomplete="off">

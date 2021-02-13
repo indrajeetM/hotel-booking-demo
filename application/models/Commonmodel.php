@@ -55,6 +55,37 @@
 			}
 
 		}
+		
+	    /*CHECK user data for prfile section*/
+    	public function get_profile($usr_id){
+			$this->db->select('*');
+			$this->db->where('id', $usr_id);
+			$query = $this->db->get('tbl_users');
+			$response = $query->result();
+			
+			if(isset($response) && !empty($response)){
+				return $response;
+			}else{
+				return 0;
+			}
+
+		}
+
+	    /*Update user data*/
+    	public function update_profile($usr_id,$data){
+			
+			$this->db->where('id', $usr_id);
+			$this->db->update('tbl_users',$data);
+			$result =  $this->db->affected_rows();
+			
+			if($result){
+				return 1;
+			}else{
+				return 0;
+			}
+
+		}
+
 	    /*GET Hotels*/
     	public function get_hotel(){
 			$this->db->select('*');

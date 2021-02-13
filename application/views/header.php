@@ -49,19 +49,36 @@ defined('BASEPATH') OR exit('No direct script access allowed');
         </div>
     </div>
 </div>
-<nav class="navbar navbar-light bg-nav navbar-expand-sm flex-nowrap align-items-start">
-    <div class="d-flex flex-column">
-        <div class="d-sm-flex d-block flex-nowrap">
-            <a class=" title-font" href="<?php echo base_url(); ?>" style="font-size: 1.25rem;">HotelZone</a>
+<nav class="navbar navbar-expand-lg bg-nav">
+  <a class="navbar-brand title-font" href="<?php echo base_url(); ?>">HotelZone<br>
+  <small class="title-font">Book Hotel in Few Clicks</small></a>
 
-        </div>
-        <small class="title-font">Book Hotel in Few Clicks</small>
-        <?php 
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item">
+      	<?php 
         	if(isset($_SESSION['user_name']) &&!empty($_SESSION['user_name'])){
 		?>
-		<a class="" href="<?php echo base_url(); ?>Home/logout" style="font-size: 1.25rem;float: right;">Logout</a>
+			<li class="nav-item dropdown">
+		        <a class="nav-link dropdown-toggle title-font" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+		          Profile
+		        </a>
+		        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+		          <a class="dropdown-item" href="<?php echo base_url(); ?>Home/Profile">Profile</a>
+		          <a class="dropdown-item" href="<?php echo base_url(); ?>Home/logout">Logout</a>
+		        </div>
+		      </li>
 		<?php
-        	}
+        	}else{
         ?>
-    </div>
+        	<a class="nav-link title-font" href="<?php echo base_url(); ?>Home/LoginUser">Login</a>
+        	
+    	<?php } ?>
+      </li>
+    </ul>
+  </div>
 </nav>
