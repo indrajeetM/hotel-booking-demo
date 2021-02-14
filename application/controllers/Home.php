@@ -302,7 +302,7 @@ class Home extends CI_Controller {
 		}
 	}
 
-	public function ProfileUpdate(){
+	public function ProfileUpdateBasic(){
 		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])){
 
 			$first_name 		= $this->input->post('first_name');
@@ -374,6 +374,137 @@ class Home extends CI_Controller {
 			{
 				$this->session->set_flashdata('update_error_msg','Update Successful.');
 				redirect('Home/Profile');exit();
+			}else{
+				$this->session->set_flashdata('update_error_msg','Failed To Update. Try Again.');
+				redirect('Home/Profile');exit();
+			}
+		}else{
+			$this->session->set_flashdata('login_error_msg','Please Login.');
+			redirect('Home/LoginUser');exit();
+		}
+	}
+
+	public function ProfileUpdateImage(){
+		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name']))
+		{
+			/*validation Starts*/
+			if(!isset($_FILES["profile_image"]) || empty($_FILES["profile_image"])){
+				$this->session->set_flashdata('update_error_msg','No Profile Image Recieved');
+				redirect('Home/ProfileUpdateImage');exit();
+			}
+
+			/*upload file*/
+			$dates			= date('d-m-Yh-i-s');
+			$profile 		= './uploads';
+
+			if(!file_exists($profile)){
+				$a=mkdir($profile, 0701);
+			}
+
+			$img_name		= $_FILES["profile_image"]["name"];
+			$file_parts 	= pathinfo($img_name);
+			$extension 		= $file_parts['extension'];
+
+			$config['upload_path']      = $profile.'/';
+	        $config['allowed_types']    = 'jpg|jpeg';
+	        $config['file_name']		= $dates."_profile.".$extension;
+
+	        
+
+	        $this->load->library('upload', $config);
+	       	$this->upload->initialize($config);
+		 	if ( ! $this->upload->do_upload("profile_image"))
+	        {
+	        	$this->session->set_flashdata('register_error_msg','Failed To Upload Profile Image. Try Again.');
+				redirect('Home/');exit();
+	        }
+
+			$db_data['profile_image'] 		= $config['upload_path'].$config['file_name'];
+			$update_id 		= $_SESSION['user_id'];
+			$get_result 	= $this->Commonmodel->get_profile($update_id);
+			$insert_result 	= $this->Commonmodel->update_profile($update_id,$db_data);
+			if($insert_result)
+			{
+				if(file_exists($get_result[0]->profile_image)){
+					unlink($get_result[0]->profile_image);
+				}
+				$this->session->set_flashdata('update_error_msg','Profile Image Update Successful.');
+				redirect('Home/Profile');exit();
+			}else{
+				$this->session->set_flashdata('update_error_msg','Failed To Update. Try Again.');
+				redirect('Home/Profile');exit();
+			}
+		}else{
+			$this->session->set_flashdata('login_error_msg','Please Login.');
+			redirect('Home/LoginUser');exit();
+		}
+	}
+
+
+	public function ProfileUpdatePassword(){
+		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])){
+
+			$current_password 		= $this->input->post('current_password');
+			$new_password 			= $this->input->post('new_password');
+			$confirm_password 		= $this->input->post('confirm_password');
+
+			$post_array_check = array('current_password'=>'Current Password',
+									  'new_password'=>'New Password',
+									  'confirm_password'=>'Confirm Password');
+
+			foreach ($post_array_check as $key => $value) {
+				
+				if (!array_key_exists($key,$_POST)){
+					$this->session->set_flashdata('update_error_msg','Data '.$value.' Not Received.');
+					redirect('Home/Profile');exit();
+				}
+				if (empty($_POST[$key])|| trim($_POST[$key])==''){
+					$this->session->set_flashdata('update_error_msg','Please Provide '.$value.'.');
+					redirect('Home/');exit();
+				}
+				
+			}
+			if( strlen( $current_password) >250)
+			{
+				$this->session->set_flashdata('update_error_msg','Please Provide  Current Password With 250 Characters');
+				redirect('Home/Profile');exit();
+			}
+
+			if( strlen( $new_password) >250){
+
+				$this->session->set_flashdata('update_error_msg','Please Provide New Password With 250 Characters');
+				redirect('Home/Profile');exit();
+			}
+			if( strlen( $confirm_password) >250){
+
+				$this->session->set_flashdata('update_error_msg','Please Provide Confirm Password With 250 Characters');
+				redirect('Home/Profile');exit();
+			}
+			/*validation Ends*/
+
+			$update_id 		= $_SESSION['user_id'];
+			$get_result 	= $this->Commonmodel->get_profile($update_id);
+			if(empty($get_result))
+			{
+				$this->session->set_flashdata('login_error_msg','Please Login. Session Expired.');
+				redirect('Home/LoginUser');exit();
+			}
+			if($get_result[0]->password!=md5($current_password))
+			{
+				$this->session->set_flashdata('update_error_msg','Your Current Password Do Not Match');
+				redirect('Home/Profile');exit();
+			}
+
+		  	$db_data['password'] 			= md5($confirm_password);
+			
+			$update_id 		= $_SESSION['user_id'];
+			$insert_result  = $this->Commonmodel->update_profile($update_id,$db_data);
+			if($insert_result)
+			{
+				$this->session->unset_userdata('user_id');
+        		$this->session->unset_userdata('user_name');
+				$this->session->set_flashdata('login_error_msg','Password Updated Successfuly. Please Login.');
+				redirect('Home/LoginUser');exit();
 			}else{
 				$this->session->set_flashdata('update_error_msg','Failed To Update. Try Again.');
 				redirect('Home/Profile');exit();
