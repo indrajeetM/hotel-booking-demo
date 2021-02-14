@@ -10,8 +10,7 @@ class Home extends CI_Controller {
 		$this->load->library('common_library');
 	}
 
-	public function index()
-	{
+	public function index(){
 		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name']))
 		{
 			redirect('Home/ViewHotels');
@@ -189,8 +188,22 @@ class Home extends CI_Controller {
 	public function ViewHotels(){
 		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name']))
 		{
-			$hotel_result = $this->Commonmodel->get_hotel();
-			$data['list'] = $hotel_result;
+			$sort_type 	= $this->input->get('sort_type');
+			$sort_value = $this->input->get('sort_value');
+
+			if(isset($sort_type) && isset($sort_value) && !empty($sort_type) && !empty($sort_value)){
+
+			}else{
+				$sort_type = "id";
+				$sort_value = "asc";
+			}
+
+			$hotel_result 		= $this->Commonmodel->get_hotel($sort_type,$sort_value);
+			
+			$data['list'] 		= $hotel_result;
+			$data['sort_type'] 	= $sort_type;
+			$data['sort_value'] = $sort_value;
+
 			$this->load->view('header');
 			$this->load->view('hotel_list',$data);
 			$this->load->view('footer');
@@ -206,25 +219,25 @@ class Home extends CI_Controller {
 		$c  = 1;
 		$hotels = $this->common_library->ReadHotelList();
 		foreach ($hotels['result'] as $key => $value) {
-			$hotel_id = $value['hotel_id'];
-			$hotel_name = $value['hotel_name'];
-			$address = $value['address'];
-			$stars = isset($value['stars'])?$value['stars']:'0';
-			$price = $value['price'];
-			$photo = $value['photo'];
-			$hotel_currency_code = $value['hotel_currency_code'];
-			$price = $value['price'];
-			$hotel_amenities = json_encode($value['hotel_amenities']);
+			$hotel_id 				= $value['hotel_id'];
+			$hotel_name 			= $value['hotel_name'];
+			$address 				= $value['address'];
+			$stars 					= isset($value['stars'])?$value['stars']:'0';
+			$price 					= $value['price'];
+			$photo 					= $value['photo'];
+			$hotel_currency_code 	= $value['hotel_currency_code'];
+			$price 					= $value['price'];
+			$hotel_amenities 		= json_encode($value['hotel_amenities']);
 
-			$db_data['hotel_id'] = $hotel_id;
-			$db_data['hotel_name'] = $hotel_name;
-			$db_data['address'] = $address;
-			$db_data['starts'] = $stars;
-			$db_data['price'] = $price;
-			$db_data['photo'] = $photo;
-			$db_data['hotel_cur_code'] = $hotel_currency_code;
-			$db_data['amenities'] = $hotel_amenities;
-			$insert_result = $this->Commonmodel->insert_hotel($db_data);
+			$db_data['hotel_id'] 		= $hotel_id;
+			$db_data['hotel_name'] 		= $hotel_name;
+			$db_data['address'] 		= $address;
+			$db_data['starts'] 			= $stars;
+			$db_data['price'] 			= $price;
+			$db_data['photo'] 			= $photo;
+			$db_data['hotel_cur_code'] 	= $hotel_currency_code;
+			$db_data['amenities'] 		= $hotel_amenities;
+			$insert_result 				= $this->Commonmodel->insert_hotel($db_data);
 			if($insert_result){
 				$c++;
 			}
@@ -240,39 +253,39 @@ class Home extends CI_Controller {
 		}
 
 		$hotels = $this->common_library->ReadHotelList();
+		$found_index = array_search($post_hotel_id, array_column($hotels['result'], 'hotel_id'));
+		if ($found_index !== FALSE){
+			$hotel_id 				= $hotels['result'][$found_index]['hotel_id'];
+			$hotel_name 			= $hotels['result'][$found_index]['hotel_name'];
+			$address 				= $hotels['result'][$found_index]['address'];
+			$stars 					= isset($hotels['result'][$found_index]['stars'])?$hotels['result'][$found_index]['stars']:'0';
+			$price 					= $hotels['result'][$found_index]['price'];
+			$photo 					= $hotels['result'][$found_index]['photo'];
+			$hotel_currency_code 	= $hotels['result'][$found_index]['hotel_currency_code'];
+			$price 					= $hotels['result'][$found_index]['price'];
+			$hotel_amenities 		= $hotels['result'][$found_index]['hotel_amenities'];
 
-		foreach ($hotels['result'] as $key => $value) {
-			$hotel_id = $value['hotel_id'];
-			if($hotel_id==$post_hotel_id){
-				
-				$hotel_name = $value['hotel_name'];
-				$address = $value['address'];
-				$stars = isset($value['stars'])?$value['stars']:'0';
-				$price = $value['price'];
-				$photo = $value['photo'];
-				$hotel_currency_code = $value['hotel_currency_code'];
-				$price = $value['price'];
-				$hotel_amenities = $value['hotel_amenities'];
+			$db_data['hotel_id'] 		= $hotel_id;
+			$db_data['hotel_name'] 		= $hotel_name;
+			$db_data['address'] 		= $address;
+			$db_data['starts'] 			= $stars;
+			$db_data['price'] 			= $price;
+			$db_data['photo'] 			= $photo;
+			$db_data['hotel_cur_code'] 	= $hotel_currency_code;
+			$db_data['amenities'] 		= $hotel_amenities;
 
-				$db_data['hotel_id'] = $hotel_id;
-				$db_data['hotel_name'] = $hotel_name;
-				$db_data['address'] = $address;
-				$db_data['starts'] = $stars;
-				$db_data['price'] = $price;
-				$db_data['photo'] = $photo;
-				$db_data['hotel_cur_code'] = $hotel_currency_code;
-				$db_data['amenities'] = $hotel_amenities;
-				break;
-			}
+			$data['value'] = $db_data;
+			$this->load->view('header');
+			$this->load->view('hotel_view_details',$data);
+			$this->load->view('footer');
+
+		}else{
+			redirect('Home/ViewHotels');exit();
 		}
-		$data['value'] = $db_data;
-		$this->load->view('header');
-		$this->load->view('hotel_view_details',$data);
-		$this->load->view('footer');
 
 	}
 
-	public function SortData(){
+/*	public function SortData(){
 		$sort_type 	= $this->input->get('sort_type');
 		$sort_value = $this->input->get('sort_value');
 
@@ -281,7 +294,7 @@ class Home extends CI_Controller {
 		$this->load->view('header');
 		$this->load->view('hotel_list',$data);
 		$this->load->view('footer');
-	}
+	}*/
 
 	public function Profile(){
 		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name']))
@@ -368,8 +381,8 @@ class Home extends CI_Controller {
 			$db_data['email'] 				= $email;
 			$db_data['mobile'] 				= $mobile;
 			
-			$update_id = $_SESSION['user_id'];
-			$insert_result = $this->Commonmodel->update_profile($update_id,$db_data);
+			$update_id 		= $_SESSION['user_id'];
+			$insert_result 	= $this->Commonmodel->update_profile($update_id,$db_data);
 			if($insert_result)
 			{
 				$this->session->set_flashdata('update_error_msg','Update Successful.');
@@ -419,8 +432,9 @@ class Home extends CI_Controller {
 				redirect('Home/');exit();
 	        }
 
-			$db_data['profile_image'] 		= $config['upload_path'].$config['file_name'];
-			$update_id 		= $_SESSION['user_id'];
+			$db_data['profile_image'] 	= $config['upload_path'].$config['file_name'];
+			$update_id 					= $_SESSION['user_id'];
+
 			$get_result 	= $this->Commonmodel->get_profile($update_id);
 			$insert_result 	= $this->Commonmodel->update_profile($update_id,$db_data);
 			if($insert_result)
@@ -443,7 +457,7 @@ class Home extends CI_Controller {
 
 	public function ProfileUpdatePassword(){
 		if(isset($_SESSION['user_name']) && !empty($_SESSION['user_name'])){
-
+			/*validation Ends*/
 			$current_password 		= $this->input->post('current_password');
 			$new_password 			= $this->input->post('new_password');
 			$confirm_password 		= $this->input->post('confirm_password');

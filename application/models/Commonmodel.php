@@ -87,9 +87,10 @@
 		}
 
 	    /*GET Hotels*/
-    	public function get_hotel(){
+    	public function get_hotel($sort_col,$sort_type){
 			$this->db->select('*');
-			
+			if(!empty($sort_col) && !empty($sort_type))
+				$this->db->order_by($sort_col, $sort_type);
 			$query = $this->db->get('tbl_hotel_list');
 			$response = $query->result();
 			
@@ -101,7 +102,7 @@
 
 		}
 	    /*GET Hotels*/
-    	public function get_hotel_data($sort_col,$sort_type){
+    	/*public function get_hotel_data($sort_col,$sort_type){
 			$this->db->select('*');
 			
 			$this->db->order_by($sort_col, $sort_type);
@@ -114,7 +115,7 @@
 				return 0;
 			}
 
-		}
+		}*/
 
 	  
 
